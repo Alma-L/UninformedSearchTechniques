@@ -1,0 +1,2 @@
+# UninformedSearchTechniques
+Uninformed Search Techniques
