@@ -13,25 +13,28 @@ def is_valid(schedule, week, group, player, player_pairs):
 
     return True
 
-def solve_sgp(players, groups, players_per_group, weeks):
+def solve_sgp(players, groups, players_per_group, weeks, max_depth ):
     """
     Solve the Social Golfers Problem using DFS and Backtracking.
     """
     schedule = [[[] for _ in range(groups)] for _ in range(weeks)]
     player_pairs = set()  # Track all player pairs to prevent repeats
 
-    def backtrack(week, group, player_index):
+    def backtrack(week, group, player_index,depth):
+        if depth > max_depth:
+            return False
+
         # Base case: all weeks scheduled
         if week == weeks:
             return True
 
         # Move to the next week if all groups are scheduled
         if group == groups:
-            return backtrack(week + 1, 0, 0)
+            return backtrack(week + 1, 0, 0,depth)
 
         # If the current group is full, move to the next group
         if len(schedule[week][group]) == players_per_group:
-            return backtrack(week, group + 1, 0)
+            return backtrack(week, group + 1, 0,depth)
 
         # Try adding players to the current group
         for player in range(player_index, players):
@@ -44,7 +47,7 @@ def solve_sgp(players, groups, players_per_group, weeks):
                         player_pairs.add((player, teammate))
 
                 # Recur to the next step
-                if backtrack(week, group, player + 1):
+                if backtrack(week, group, player + 1,depth+1):
                     return True
 
                 # Backtrack: remove the player and their pairs
@@ -57,7 +60,7 @@ def solve_sgp(players, groups, players_per_group, weeks):
         return False
 
     # Start the backtracking process
-    if backtrack(0, 0, 0):
+    if backtrack(0, 0, 0,0):
         return schedule
     else:
         return None
@@ -67,9 +70,10 @@ players = 32
 groups = 8
 players_per_group = 4
 weeks = 8
+max_depth = 300
 
 # Solve the problem
-solution = solve_sgp(players, groups, players_per_group, weeks)
+solution = solve_sgp(players, groups, players_per_group, weeks,max_depth)
 
 # Output the result
 if solution:
